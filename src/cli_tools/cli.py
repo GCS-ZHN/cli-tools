@@ -1,12 +1,12 @@
 import click
 
-from cli_tools.core import VersionedManager
+from cli_tools.core import CliManager
 from dataclasses import dataclass
 
 
 @dataclass
 class GroupOption(object):
-    manager: VersionedManager
+    manager: CliManager
     verbose: bool = False
 
 
@@ -14,7 +14,7 @@ class GroupOption(object):
 @click.pass_context
 def main(ctx: click.Context):
     ctx.obj = GroupOption(
-        manager=VersionedManager()
+        manager=CliManager()
     )
 
 
@@ -36,7 +36,7 @@ def install(ctx: click.Context, cli_name: str, cli_version: str = None, force: b
     This command installs a CLI command specified by its name. Optionally, a version can be specified.
     If the command is already installed, it can be reinstalled by using the force option.
     """
-    manager: VersionedManager = ctx.obj.manager
+    manager: CliManager = ctx.obj.manager
     try:
         manager.install_cli(cli_name, version=cli_version, force=force)
     except Exception as e:
@@ -55,7 +55,7 @@ def list(ctx: click.Context, cli_name: str = None):
     including its name, author, description, latest version, and available versions.
     """
     from prettytable import PrettyTable
-    manager: VersionedManager = ctx.obj.manager
+    manager: CliManager = ctx.obj.manager
     if cli_name:
         cli_meta = manager.get_cli_meta(cli_name)
         authors = ', '.join(f"{a['name']} <{a['email']}>" for a in cli_meta.authors)
@@ -85,7 +85,7 @@ def uninstall(ctx: click.Context, cli_name: str):
 
     This command uninstalls a CLI command specified by its name.
     """
-    manager: VersionedManager = ctx.obj.manager
+    manager: CliManager = ctx.obj.manager
     try:
         manager.uninstall_cli(cli_name)
     except Exception as e:

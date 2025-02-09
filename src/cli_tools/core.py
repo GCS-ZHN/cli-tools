@@ -1,5 +1,6 @@
 import requests
 import subprocess
+import yaml
 from dataclasses import dataclass
 from typing import Dict, List
 
@@ -16,21 +17,44 @@ class CliMeta:
     versions: List[Dict[str, str]]
 
 
-class VersionedManager:
+class CliManager:
+    def __doc__(self):
+        """
+        CliManager is a class that manages the CLI tools registry.
+
+        Attributes:
+            repo (str): The repository URL for the CLI tools registry.
+            registry_cache (dict): A cache to store the registry data for different commits.
+        """
     def __init__(self, repo: str = "GCS-ZHN/cli-tools-registry"):
         self.repo = repo
         self.registry_cache = {}
 
     def get_registry(self, commit: str = "main") -> Dict:
-        """获取指定commit的注册表"""
+        """
+        Fetch the registry data from the specified commit.
+
+        This method retrieves the registry data from the given commit in the repository. If the registry data
+        for the specified commit is already cached, it returns the cached data. Otherwise, it fetches the data
+        from the remote repository, parses it, and caches it for future use.
+
+        Args:
+            commit (str): The commit hash or branch name to fetch the registry data from. Defaults to "main".
+
+        Returns:
+            Dict: The registry data containing CLI metadata.
+
+        Raises:
+            requests.exceptions.RequestException: If there is an issue with the network request.
+            yaml.YAMLError: If there is an issue with parsing the YAML data.
+        """
         if commit in self.registry_cache:
             return self.registry_cache[commit]
             
         url = REGISTRY_URL.format(repo=self.repo, commit=commit)
         response = requests.get(url)
         response.raise_for_status()
-        
-        import yaml  # 需添加PyYAML依赖
+
         registry = yaml.safe_load(response.text)
         registry['commands'] = [CliMeta(**c) for c in registry['commands']]
         self.registry_cache[commit] = registry
