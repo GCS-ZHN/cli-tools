@@ -11,7 +11,7 @@ class CliMeta:
     name: str
     description: str
     path: str
-    author: str
+    authors: List[Dict[str, str]]
     latest: str
     versions: List[Dict[str, str]]
 

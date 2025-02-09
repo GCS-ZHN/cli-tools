@@ -58,8 +58,9 @@ def list(ctx: click.Context, cli_name: str = None):
     manager: VersionedManager = ctx.obj.manager
     if cli_name:
         cli_meta = manager.get_cli_meta(cli_name)
+        authors = ', '.join(f"{a['name']} <{a['email']}>" for a in cli_meta.authors)
         print('Name       :', cli_meta.name)
-        print('Author     :', cli_meta.author)
+        print('Authors    :', authors)
         print('Description:', cli_meta.description)
         print('Latest     :', cli_meta.latest)
         table = PrettyTable(['version', 'commit_id'])
