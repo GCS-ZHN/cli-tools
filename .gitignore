@@ -3,3 +3,5 @@
 **/src/*.egg-info
 __pycache__/
 *.py[cod]
+
+.DS_Store
