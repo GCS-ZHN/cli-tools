@@ -25,10 +25,14 @@ class CliManager:
         Attributes:
             repo (str): The repository URL for the CLI tools registry.
             registry_cache (dict): A cache to store the registry data for different commits.
+            backend (str): The backend to use for installing, updating, and removing CLI tools.
+                should be compatible with pipx.
         """
-    def __init__(self, repo: str = "GCS-ZHN/cli-tools-registry"):
+    def __init__(self, repo: str = "GCS-ZHN/cli-tools-registry", backend: str = 'pipx'):
         self.repo = repo
         self.registry_cache = {}
+        self.backend = backend
+        print('backend: ', backend)
 
     def get_registry(self, commit: str = "main") -> Dict:
         """
@@ -89,7 +93,7 @@ class CliManager:
             commit=version_info['commit'],
             path=cli_meta.path
             )
-        args = ["pipx", "install", install_url]
+        args = [*self.backend.split(), "install", install_url]
         if force:
             args.append('--force')
         result = subprocess.run(args)
@@ -109,7 +113,7 @@ class CliManager:
             ValueError: If the command is not found in the registry.
         """
         self.get_cli_meta(cli_name)
-        args = ["pipx", "uninstall", 'cli-' + cli_name]
+        args = [*self.backend.split(), "uninstall", 'cli-' + cli_name]
         result = subprocess.run(args)
         if result.returncode != 0:
             raise RuntimeError(f'Uninstall cli {cli_name} failed.')

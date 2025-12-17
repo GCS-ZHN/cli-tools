@@ -11,10 +11,14 @@ class GroupOption(object):
 
 
 @click.group()
+@click.option(
+    '--backend',
+    type=click.STRING,
+    help='Backend for install or uninstall')
 @click.pass_context
-def main(ctx: click.Context):
+def main(ctx: click.Context, backend: str):
     ctx.obj = GroupOption(
-        manager=CliManager()
+        manager=CliManager(backend=backend)
     )
 
 
