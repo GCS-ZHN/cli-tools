@@ -14,7 +14,8 @@ class GroupOption(object):
 @click.option(
     '--backend',
     type=click.STRING,
-    help='Backend for install or uninstall')
+    help='Backend for install or uninstall',
+    default='pipx')
 @click.pass_context
 def main(ctx: click.Context, backend: str):
     ctx.obj = GroupOption(
