@@ -2,7 +2,22 @@ import click
 
 from cli_tools.core import CliManager
 from dataclasses import dataclass
+from shutil import which
 
+SUPPORTED_BACKENDS={
+    'uv': 'uv tool',
+    'pipx': 'pipx'
+}
+
+
+def detect_backend():
+    for backend in SUPPORTED_BACKENDS:
+        if which(backend):
+            click.echo(f'Detected backend: {backend}')
+            return backend
+    else:
+        raise click.ClickException(
+            f'No backend detected, please install: {",".join(SUPPORTED_BACKENDS)}')
 
 @dataclass
 class GroupOption(object):
@@ -11,15 +26,11 @@ class GroupOption(object):
 
 
 @click.group()
-@click.option(
-    '--backend',
-    type=click.STRING,
-    help='Backend for install or uninstall',
-    default='pipx')
 @click.pass_context
-def main(ctx: click.Context, backend: str):
+def main(ctx: click.Context):
+    backend = detect_backend()
     ctx.obj = GroupOption(
-        manager=CliManager(backend=backend)
+        manager=CliManager(backend=SUPPORTED_BACKENDS[backend])
     )
 
 

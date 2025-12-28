@@ -32,7 +32,6 @@ class CliManager:
         self.repo = repo
         self.registry_cache = {}
         self.backend = backend
-        print('backend: ', backend)
 
     def get_registry(self, commit: str = "main") -> Dict:
         """
